@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Invitation Prompt Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #9ca3af;
+            box-shadow: 0 0 0 4px rgba(209, 213, 219, 0.2);
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f9fafb;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background: #f3f4f6;
+        }
+
+        .hidden-input {
+            display: none;
+            margin-top: 10px;
+            padding-left: 20px;
+            border-left: 2px solid #e5e7eb;
+        }
+
+        .btn-generate {
+            background: #111827;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            width: 100%;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .btn-generate:hover {
+            background: #1f2937;
+            transform: translateY(-2px);
+        }
+
+        #result-container {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="py-10 px-4">
+
+    <div class="max-w-3xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2 font-serif" style="font-family: 'Playfair Display', serif;">Wedding Form Generator</h1>
+            <p class="text-gray-500">Isi detail di bawah untuk membuat prompt instruksi website undangan Anda.</p>
+        </div>
+
+        <div class="glass-card p-8 md:p-12">
+            <form id="weddingForm">
+                <!-- Data Pengantin -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="form-group">
+                        <label>Nama Lengkap Pengantin Pria</label>
+                        <input type="text" id="pria" placeholder="Contoh: Budi Santoso" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Lengkap Pengantin Wanita</label>
+                        <input type="text" id="wanita" placeholder="Contoh: Siti Aminah" required>
+                    </div>
+                </div>
+
+                <!-- Waktu -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="form-group">
+                        <label>Tanggal Pernikahan</label>
+                        <input type="date" id="tanggal" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Waktu Akad Nikah</label>
+                        <input type="time" id="waktu_akad" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Waktu Resepsi</label>
+                        <input type="time" id="waktu_resepsi" required>
+                    </div>
+                </div>
+
+                <!-- Lokasi -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="form-group">
+                        <label>Lokasi Akad Nikah</label>
+                        <textarea id="lokasi_akad" rows="2" placeholder="Alamat lengkap lokasi akad..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Lokasi Resepsi</label>
+                        <textarea id="lokasi_resepsi" rows="2" placeholder="Alamat lengkap lokasi resepsi..." required></textarea>
+                    </div>
+                </div>
+
+                <!-- Desain -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="form-group">
+                        <label>Tema Warna</label>
+                        <select id="tema_warna">
+                            <option>Dusty Rose</option>
+                            <option>Sage Green</option>
+                            <option>Champagne / Gold</option>
+                            <option>Ivory / Off White</option>
+                            <option>Blush Pink</option>
+                            <option>Lavender / Lilac</option>
+                            <option>Emerald Green</option>
+                            <option>Navy Blue</option>
+                            <option>Terracotta / Burnt Orange</option>
+                            <option>Maroon / Wine Red</option>
+                            <option>Peach / Coral</option>
+                            <option>Black & White</option>
+                            <option>Dusty Blue</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Gaya Visual</label>
+                        <select id="gaya_visual">
+                            <option>Minimalis elegan</option>
+                            <option>Rustic</option>
+                            <option>Floral / Botanical</option>
+                            <option>Modern glam</option>
+                            <option>Classic / Traditional</option>
+                            <option>Bohemian</option>
+                            <option>Cute & Fun</option>
+                            <option>Kultural / Adat</option>
+                            <option>Dark mode / Moody</option>
+                            <option>Monokrom hitam putih</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Elemen Tambahan -->
+                <div class="mb-8">
+                    <label>Elemen Website (Pilih satu atau lebih)</label>
+                    
+                    <!-- Hero Image -->
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="elemen" value="Hero Image Pasangan" onchange="toggleExtra(this, 'hero_link_div')">
+                        <span>Hero image pasangan</span>
+                    </label>
+                    <div id="hero_link_div" class="hidden-input">
+                        <input type="text" id="hero_link" placeholder="Link Google Drive foto utama">
+                    </div>
+
+                    <!-- Countdown -->
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="elemen" value="Countdown Timer">
+                        <span>Countdown timer</span>
+                    </label>
+
+                    <!-- RSVP -->
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="elemen" value="RSVP Form">
+                        <span>RSVP form</span>
+                    </label>
+
+                    <!-- Galeri -->
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="elemen" value="Galeri Foto" onchange="toggleExtra(this, 'galeri_div')">
+                        <span>Galeri foto pasangan</span>
+                    </label>
+                    <div id="galeri_div" class="hidden-input">
+                        <p class="text-xs text-gray-500 mb-2">Masukkan 6 link Google Drive:</p>
+                        <div class="grid grid-cols-1 gap-2">
+                            <input type="text" class="galeri-link" placeholder="Link Foto 1">
+                            <input type="text" class="galeri-link" placeholder="Link Foto 2">
+                            <input type="text" class="galeri-link" placeholder="Link Foto 3">
+                            <input type="text" class="galeri-link" placeholder="Link Foto 4">
+                            <input type="text" class="galeri-link" placeholder="Link Foto 5">
+                            <input type="text" class="galeri-link" placeholder="Link Foto 6">
+                        </div>
+                    </div>
+
+                    <!-- Music -->
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="elemen" value="Background Music" onchange="toggleExtra(this, 'music_div')">
+                        <span>Background music</span>
+                    </label>
+                    <div id="music_div" class="hidden-input">
+                        <input type="text" id="music_link" placeholder="Link MP3 atau Youtube">
+                    </div>
+
+                    <!-- Maps -->
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="elemen" value="Google Maps Lokasi">
+                        <span>Google Maps lokasi</span>
+                    </label>
+
+                    <!-- Gift -->
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="elemen" value="Wedding Gift" onchange="toggleExtra(this, 'bank_div')">
+                        <span>Wedding gift (Amplop Digital)</span>
+                    </label>
+                    <div id="bank_div" class="hidden-input">
+                        <input type="text" id="bank_info" placeholder="Nama Bank & No Rekening">
+                    </div>
+
+                    <!-- Ucapan -->
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="elemen" value="Buku Tamu / Ucapan">
+                        <span>Ucapan dari tamu</span>
+                    </label>
+                </div>
+
+                <!-- Cerita Cinta -->
+                <div class="form-group mb-6">
+                    <label>Cerita Cinta Kalian</label>
+                    <textarea id="cerita" rows="4" placeholder="Ceritakan singkat bagaimana kalian bertemu..."></textarea>
+                </div>
+
+                <!-- Kata Pembuka -->
+                <div class="form-group mb-10">
+                    <label>Kata Pembuka Kolom Ucapan</label>
+                    <input type="text" id="kata_pembuka" placeholder="Contoh: Doa restu Anda sangat berarti bagi kami...">
+                </div>
+
+                <button type="button" onclick="generatePrompt()" class="btn-generate">Generate Prompt Website</button>
+            </form>
+        </div>
+
+        <!-- Result -->
+        <div id="result-container" class="mt-10">
+            <div class="bg-gray-900 text-gray-100 p-6 rounded-2xl shadow-2xl border border-gray-700">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Prompt Siap Pakai:</h2>
+                    <button onclick="copyToClipboard()" class="text-xs bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded">Salin Prompt</button>
+                </div>
+                <div id="promptOutput" class="text-sm leading-relaxed whitespace-pre-wrap font-mono text-blue-300"></div>
+            </div>
+            <p class="text-center text-gray-500 mt-4 text-sm">Gunakan prompt di atas pada ChatGPT/Gemini untuk mendapatkan kode website Anda.</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleExtra(checkbox, divId) {
+            const div = document.getElementById(divId);
+            div.style.display = checkbox.checked ? 'block' : 'none';
+        }
+
+        function generatePrompt() {
+            const pria = document.getElementById('pria').value;
+            const wanita = document.getElementById('wanita').value;
+            const tanggal = document.getElementById('tanggal').value;
+            const akad = document.getElementById('waktu_akad').value;
+            const resepsi = document.getElementById('waktu_resepsi').value;
+            const l_akad = document.getElementById('lokasi_akad').value;
+            const l_resepsi = document.getElementById('lokasi_resepsi').value;
+            const warna = document.getElementById('tema_warna').value;
+            const gaya = document.getElementById('gaya_visual').value;
+            const cerita = document.getElementById('cerita').value;
+            const pembuka = document.getElementById('kata_pembuka').value;
+
+            // Elemen Terpilih
+            let elemenArr = [];
+            document.querySelectorAll('input[name="elemen"]:checked').forEach(el => {
+                let text = el.value;
+                if (el.value === 'Hero Image Pasangan') {
+                    text += ` (Link Foto: ${document.getElementById('hero_link').value})`;
+                }
+                if (el.value === 'Galeri Foto') {
+                    const links = Array.from(document.querySelectorAll('.galeri-link'))
+                                      .map(i => i.value)
+                                      .filter(v => v !== "")
+                                      .join(", ");
+                    text += ` (Link Galeri: ${links})`;
+                }
+                if (el.value === 'Background Music') {
+                    text += ` (Link Musik: ${document.getElementById('music_link').value})`;
+                }
+                if (el.value === 'Wedding Gift') {
+                    text += ` (Informasi Rekening: ${document.getElementById('bank_info').value})`;
+                }
+                elemenArr.push("- " + text);
+            });
+
+            const prompt = `Saya ingin kamu bertindak sebagai seorang frontend developer profesional yang membuat website undangan pernikahan digital. Website ini harus memiliki desain yang modern, elegan, dan responsif (mobile-first). Gunakan efek animasi halus saat scroll, parallax ringan, serta transisi yang lembut. Website mencakup beberapa bagian utama seperti:
+
+DETAIL PENGANTIN:
+- Pengantin Pria: ${pria}
+- Pengantin Wanita: ${wanita}
+
+WAKTU & LOKASI:
+- Tanggal: ${tanggal}
+- Akad Nikah: ${akad} di ${l_akad}
+- Resepsi: ${resepsi} di ${l_resepsi}
+
+PREFERENSI DESAIN:
+- Tema Warna: ${warna}
+- Gaya Visual: ${gaya}
+
+ELEMEN YANG HARUS ADA:
+${elemenArr.join('\n')}
+
+KONTEN KHUSUS:
+- Cerita Cinta: "${cerita}"
+- Kolom Ucapan: Gunakan kata pembuka "${pembuka}"
+
+Tolong buatkan kode dalam satu file HTML (termasuk CSS dengan Tailwind dan JavaScript untuk interaksi). Pastikan font menggunakan font-font Google yang elegan seperti Playfair Display atau Montserrat.`;
+
+            document.getElementById('promptOutput').innerText = prompt;
+            document.getElementById('result-container').style.display = 'block';
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('promptOutput').innerText;
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            
+            const btn = document.querySelector('button[onclick="copyToClipboard()"]');
+            btn.innerText = "Tersalin!";
+            setTimeout(() => { btn.innerText = "Salin Prompt"; }, 2000);
+        }
+    </script>
+</body>
+</html>
